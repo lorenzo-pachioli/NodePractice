@@ -14,7 +14,7 @@ app.get('/notes', (request, response)=> {
     Note.find({})
     .then(notes => {
         response.json(notes)
-        /* mongoose.connection.close(() => console.log('Disconected')) */
+        mongoose.connection.close()
     })
     .catch( err => response.status(err.status))
     
@@ -26,7 +26,7 @@ app.get('/notes/:id', (request, response)=> {
     .then(note => {
         if(note){
             response.json(note)
-        /* mongoose.connection.close(() => console.log('Disconected')) */
+            mongoose.connection.close()
         }else{
             response.status(404).end('error 404, not found')
         }
@@ -42,7 +42,7 @@ app.delete('/notes/:id', (request, response)=> {
     .then(note => {
         if(note){
             response.json(note)
-        /* mongoose.connection.close(() => console.log('Disconected')) */
+            mongoose.connection.close()
         }else{
             response.status(404).end('error 404, not found')
         }
@@ -69,7 +69,7 @@ app.post('/notes/:post', (request, response)=> {
     newNote.save()
     .then(note => {
         response.json(note);
-        /* mongoose.connection.close(); */
+        mongoose.connection.close();
     })
     .catch(err => response.status(err.status))
     
