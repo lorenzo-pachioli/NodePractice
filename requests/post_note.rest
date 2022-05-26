@@ -1,6 +1,2 @@
-POST  http://localhost:3000/notes
-Content-Type: application/json
+POST  http://localhost:3001/notes/Otra nota mas
 
-{
-    "content" : "Otra nota mas"
-}

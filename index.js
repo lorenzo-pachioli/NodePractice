@@ -1,69 +1,78 @@
+require('./mongoDB');
+
 const express = require('express');
 const cors = require('cors');
 const logger = require('./logger.js');
-
 const app = express();
+const Note = require('./models/Note');
 
 app.use(express.json())
 app.use(cors())
-
 app.use(logger)
 
-let notes = [
-    {
-        id:1, 
-        content:"Primera nota con node"
-    },
-    {
-        id:2, 
-        content:"Segunda nota con node"
-    }, 
-    {
-        id:3, 
-        content:"Tercera nota con node"
-    }
-]
-
-app.get('/', (request, response)=> {
-    response.send('<h1>Hellow world</h1>')
-})
-
 app.get('/notes', (request, response)=> {
-    response.json(notes)
+    Note.find({})
+    .then(notes => {
+        response.json(notes)
+        /* mongoose.connection.close(() => console.log('Disconected')) */
+    })
+    .catch( err => response.status(err.status))
+    
 })
 
 app.get('/notes/:id', (request, response)=> {
     const id = request.params.id;
-    const resp = notes.find((note=> note.id === Number(id)))
-    if(resp){
-        response.json(resp);
-    }else{
-        response.status(404).end(' 404 note not found')
-    }
-    
+    Note.findById(id)
+    .then(note => {
+        if(note){
+            response.json(note)
+        /* mongoose.connection.close(() => console.log('Disconected')) */
+        }else{
+            response.status(404).end('error 404, not found')
+        }
+    })
+    .catch(err => {
+        console.log(err)
+        return response.end('error 400, bad request')})
 })
 
 app.delete('/notes/:id', (request, response)=> {
-    const id = Number(request.params.id);
-    notes = notes.filter((note=> note.id !== id))
-    response.json(notes)
+    const id = request.params.id;
+    Note.findByIdAndDelete(id)
+    .then(note => {
+        if(note){
+            response.json(note)
+        /* mongoose.connection.close(() => console.log('Disconected')) */
+        }else{
+            response.status(404).end('error 404, not found')
+        }
+    })
+    .catch(err => {
+        console.log(err)
+        return response.end('error 400, bad request')})
+    
 })
 
 app.post('/notes/:post', (request, response)=> {
-    const note = request.params.post;
-
-    if(!note){
+    const notes = request.params.post;
+    console.log('notas:', notes)
+    
+    if(!notes){
         response.status(400).end("content is missing");
     }
 
-    const ids = notes.map((note) => note.id)
-    const maxId = Math.max(...ids) 
-    const newNote = {
-        id: maxId + 1,
-        content: note
-    }
-    notes = [...notes, newNote]
-    response.json(notes);
+    const newNote = Note({
+        content: notes,
+        date: new Date()
+    })
+
+    newNote.save()
+    .then(note => {
+        response.json(note);
+        /* mongoose.connection.close(); */
+    })
+    .catch(err => response.status(err.status))
+    
 })
 
 

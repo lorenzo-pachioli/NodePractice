@@ -1,2 +1,1 @@
-GET http://localhost:3000/notes 
-Content-Type: "application/json"
+GET http://localhost:3001/notes
