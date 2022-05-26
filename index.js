@@ -5,6 +5,7 @@ const cors = require('cors');
 const logger = require('./logger.js');
 const app = express();
 const Note = require('./models/Note');
+const mongoose = require('mongoose');
 
 app.use(express.json())
 app.use(cors())
